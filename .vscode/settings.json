@@ -1,0 +1,7 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "libs/mysql-connector-java-8.0.27.jar"
+    ],
+    "C_Cpp.errorSquiggles": "Enabled"
+}
