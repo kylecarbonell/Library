@@ -1,6 +1,7 @@
 package Medical;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -9,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class Login extends GUI implements ActionListener {
 
@@ -16,6 +18,8 @@ public class Login extends GUI implements ActionListener {
     private String pass;
 
     private JPanel loginPanel;
+    
+    private JLabel title;
 
     private JTextField username;
     private JPasswordField password;
@@ -24,12 +28,26 @@ public class Login extends GUI implements ActionListener {
     private JLabel passwordText;
 
     private JButton loginButton;
+    private JButton createAccountButton;
+
+    private JLabel errorText;
     
     public Login(){
         super();
         loginPanel = new JPanel();
         frame.add(loginPanel);
         loginPanel.setLayout(null);
+        
+        //Title text
+        title = new JLabel();
+        title.setText("Welcome to The Library");
+        title.setBounds(width/2 - 400, height/2 - 400, 800, 50);
+        title.setFont(new Font("MonoSpaced", Font.PLAIN, 50));
+        title.setForeground(Color.white);
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setVerticalAlignment(SwingConstants.CENTER);
+        loginPanel.add(title);
+
         
         //Username text label
         usernameText = new JLabel();
@@ -67,14 +85,32 @@ public class Login extends GUI implements ActionListener {
         loginButton.setBackground(Color.lightGray);
         loginButton.setForeground(Color.BLACK);
         loginButton.setFont(font);
-        loginButton.setBounds(width/2 -150, height/2 - 100, 350, 50);
+        loginButton.setBounds(width/2 -350, height/2 - 100, 350, 50);
         loginButton.setActionCommand("login");
         loginButton.addActionListener(this);    
         loginPanel.add(loginButton);
+
+        //Create account button
+        createAccountButton = new JButton();
+        createAccountButton.setText("Create Account");
+        createAccountButton.setBackground(Color.lightGray);
+        createAccountButton.setForeground(Color.BLACK);
+        createAccountButton.setFont(font);
+        createAccountButton.setBounds(width/2 + 10, height/2 - 100, 350, 50);
+        createAccountButton.setActionCommand("create");
+        createAccountButton.addActionListener(this);    
+        loginPanel.add(createAccountButton);
+
+        //Error Text
+        errorText = new JLabel();
+        errorText.setFont(font);
+        errorText.setForeground(Color.white);
+        errorText.setBounds(width/2 - 400, height/2 - 160, 800, 50);
+        errorText.setHorizontalAlignment(SwingConstants.CENTER);
+        errorText.setVerticalAlignment(SwingConstants.CENTER);
+        loginPanel.add(errorText);
         
-        loginPanel.setBackground(Color.DARK_GRAY);
-        loginPanel.setVisible(false);
-        
+        loginPanel.setBackground(Color.DARK_GRAY);        
     }
 
     public void open(){
@@ -88,17 +124,19 @@ public class Login extends GUI implements ActionListener {
     public void loginAction(){
         user = username.getText();
         pass = String.valueOf(password.getPassword());
-        
-        //Implement user and pass check system
-        //Iterate through mysql database and check for user with both user and pass 
-        /*Missing code*/
-
-        //Temporary Code
-        System.out.println(user);
-        System.out.println(pass);
     
-        System.out.println("Logged in");
-        control.open("Home");
+        userId = mysql.login(user, pass, errorText);
+        
+        //Checks if userId is not null
+        if(userId != 1){
+            control.open("Home");
+            username.setText("");
+            password.setText("");
+            frame.setJMenuBar(menuBar);
+            return;
+        }
+
+        password.setText("");
     }
 
     @Override
@@ -108,6 +146,10 @@ public class Login extends GUI implements ActionListener {
 
         if(action.equals("login")){
             loginAction();
+            System.out.println(userId);
+        }
+        else if(action.equals("create")){
+            control.open("CreateAccount");
         }
     }
 }

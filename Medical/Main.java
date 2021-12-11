@@ -1,8 +1,7 @@
 package Medical;
 
-public class Main{
-
+public class Main extends GUI{
     public static void main(String[] args) {
-        GUI.control.open("BookList");
+        control.open("Login");
     }
 }
