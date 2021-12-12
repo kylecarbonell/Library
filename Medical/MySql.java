@@ -300,7 +300,7 @@ public class MySql {
     }
     
     //Returns books from a users inventory and adds it back into the booklist
-    public void turnInBooks(DefaultTableModel model, int bookId, JLabel text){
+    public void turnInBooks(int bookId, JLabel text){
         
         String turnIn = "Select case " +
         " when book1ID = " + bookId + " then 'book1ID'" +
@@ -332,14 +332,30 @@ public class MySql {
                 updateQuantity = "UPDATE books SET quantity = " + quantity + " WHERE id = " + bookId;
             }
 
-            stmnt.execute(returnBook);
-            stmnt.execute(updateQuantity);
+            if(stmnt.execute(returnBook) && stmnt.execute(updateQuantity)){
+                text.setText("Book returned");
+            }
 
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         
+    }
+
+    public void removeFromWishlist(int bookId, JLabel text){
+        String removeWishlist = "DELETE FROM wishlist WHERE bookID = " + bookId + " AND userID = " + GUI.userId;
+
+        try {
+            Statement stmnt = con.createStatement();
+
+            if(stmnt.execute(removeWishlist)){
+                text.setText("Book removed");
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     //Publishes a book and adds it to the book 

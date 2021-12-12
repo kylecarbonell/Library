@@ -17,7 +17,6 @@ import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
-import javax.swing.text.TableView.TableRow;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -79,14 +78,18 @@ public class TurnIn extends GUI implements ActionListener, MouseListener{
 
         //Remove / Turn in button
         turnIn = new JButton();
-        turnIn = new JButton();
-        turnIn.setText("turnIn");
+        turnIn.setText("Turn In / Remove");
         turnIn.setBackground(Color.lightGray);
         turnIn.setForeground(Color.BLACK);
         turnIn.setFont(font);
         turnIn.setBounds(width/2 - 175, height/2 + 200, 350, 50);
-        turnIn.addActionListener(this);    
-        turnIn.setActionCommand("turnIn");
+        turnIn.addActionListener(this);   
+        if(wishlistTable.isEnabled()){
+            turnIn.setActionCommand("Wishlist");
+        } 
+        else if(checkedInTable.isEnabled()){
+            turnIn.setActionCommand("turnIn");
+        }
         turnInPanel.add(turnIn);
 
         //Checkout text
@@ -184,14 +187,26 @@ public class TurnIn extends GUI implements ActionListener, MouseListener{
     }
 
     public void returnBooks(){
-        mysql.turnInBooks(tempModel,bookId, turnInText);
+        mysql.turnInBooks(bookId, turnInText);
+        open();
+    }
+
+    public void removeWishlist(){
+        mysql.removeFromWishlist(bookId, turnInText);
         open();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         // TODO Auto-generated method stub
-        returnBooks();
+        String action = e.getActionCommand();
+
+        if(e.getActionCommand().equals("Wishlist")){
+            removeWishlist();
+        }
+        else if(e.getActionCommand().equals("turnIn")){
+            returnBooks();
+        }
     }
 
     @Override
@@ -209,7 +224,6 @@ public class TurnIn extends GUI implements ActionListener, MouseListener{
 
         tempModel = (DefaultTableModel)table.getModel();
         bookId = Integer.valueOf((String)table.getValueAt(row, 0));
-        System.out.println("Here");
 
         String bookName = (String)table.getValueAt(row, 1);
         turnInText.setText(bookName);
